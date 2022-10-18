@@ -1,4 +1,6 @@
-# gopher-lib
+# gopher-lib-esm
+***NOTE: This is my experimental gopher-lib for my react native project.***
+
 A node library for communication via the Gopher Internet protocol.<br>
 Useful for implementing Gopher clients and servers (server class coming soon).
 
@@ -99,8 +101,8 @@ console.log(res.toDirectoryEntity());
 ### File: example-client.js
 ```bash
 # A simple command-line client for interacting with gopher servers and downloading files.
-node example-client.js gopher://dusted.dk/
-node example-client.js gopher://dusted.dk/9/pages/goatlove/LD28_GoatLove_linux_b0021.tar.bz2 goatlove.tar.bz2
+node example/example-client.js gopher://dusted.dk/
+node example/example-client.js gopher://dusted.dk/9/pages/goatlove/LD28_GoatLove_linux_b0021.tar.bz2 goatlove.tar.bz2
 ```
 
 ### File: test.js
