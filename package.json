@@ -1,11 +1,11 @@
 {
-  "name": "gopher-lib",
+  "name": "gopher-lib-esm",
   "version": "0.2.0",
-  "description": "Client, server and utility library for the Gopher Internet protocol.",
+  "description": "Client, server and utility library for the Gopher Internet protocol. (ESM Edition)",
   "main": "lib.js",
   "type": "module",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test/test.js"
   },
   "keywords": [
     "gopher",
