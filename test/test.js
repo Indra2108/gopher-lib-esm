@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Resource } from './lib.js';
+import { Resource } from '../lib.js';
 console.log('Testing Resource...');
 
 var proto = [ '','gopher://' ];

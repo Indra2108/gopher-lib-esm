@@ -1,7 +1,7 @@
 /*jslint node: true */
 /*jshint esversion: 6 */
 
-import Server from './server.js';
+import Server from '../src/server.js';
 
 const server = new Server(7000, 'localhost');
 

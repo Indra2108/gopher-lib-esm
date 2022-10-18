@@ -1,4 +1,4 @@
-import { Client, Resource } from './lib.js'
+import { Client, Resource } from '../lib.js'
 
 var get = process.argv[2];
 var fn = process.argv[3];
