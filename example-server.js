@@ -1,10 +1,7 @@
 /*jslint node: true */
 /*jshint esversion: 6 */
 
-const Server = require('./server');
-const Common = require('./common');
-const Resource = Common.Resource;
-
+import Server from './server.js';
 
 const server = new Server(7000, 'localhost');
 

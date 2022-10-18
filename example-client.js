@@ -1,4 +1,4 @@
-var Gopher = require('./lib.js');
+import { Client, Resource } from './lib.js'
 
 var get = process.argv[2];
 var fn = process.argv[3];
@@ -12,8 +12,8 @@ if(!process.argv[2]) {
 	process.exit(1);
 }
 
-var res = new Gopher.Resource(get);
-var client = new Gopher.Client({parseDir:true, timeout: 5000});
+var res = new Resource(get);
+var client = new Client({parseDir:true, timeout: 5000});
 console.log( res.toJson() );
 console.log( res.toURI() );
 console.log( res.toDirectoryEntity() );

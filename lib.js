@@ -1,12 +1,10 @@
-'use strict';
+import GopherClient from './client.js';
+import GopherServer from './server.js';
+import { Resource, Type } from './common.js';
 
-const GopherClient = require('./client');
-const GopherServer = require('./server');
-const GopherCommon = require('./common');
-
-module.exports = {
-	Client: GopherClient,
-	Server: GopherServer,
-	Resource: GopherCommon.Resource,
-	Type: GopherCommon.Type
+export {
+	GopherClient as Client,
+	GopherServer as Server,
+	Resource,
+	Type
 };

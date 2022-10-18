@@ -1,15 +1,11 @@
 /*jslint node: true */
 /*jshint esversion: 6 */
 
-'use strict';
+import net from 'node:net'
+import fs from 'node:fs'
+import path from 'node:path';
 
-const net = require('net');
-const fs = require('fs');
-const path = require('path');
-
-const Common = require('./common.js');
-const GopherResource = Common.Resource;
-
+import { Resource } from './common.js';
 
 /** @class */
 class Reply {
@@ -19,8 +15,8 @@ class Reply {
 		 */
 		this.socket = socket;
 
-		this.hostname=hostname;
-		this.port=port;
+		this.hostname = hostname;
+		this.port = port;
 
 		this.queue = 0;
 		this.endCallback = endCallback;
@@ -89,7 +85,7 @@ class Reply {
 			item.port = '1';
 		}
 		item.selector = item.selector || '';
-		this.write(new GopherResource(item.host, item.port, item.selector, item.type, item.name).toDirectoryEntity());
+		this.write(new Resource(item.host, item.port, item.selector, item.type, item.name).toDirectoryEntity());
 	}
 
 	/**
@@ -97,7 +93,7 @@ class Reply {
 	 * @description Send an error item to client. Connection kept open!
 	 */
 	menuErr(txt) {
-		this.menuItem(GopherResource.error(txt));
+		this.menuItem(Resource.error(txt));
 	}
 
 	/**
@@ -105,7 +101,7 @@ class Reply {
 	 * @description Send an info item to client. Connection kept open!
 	 */
 	menuInfo(txt) {
-		this.menuItem(GopherResource.info(txt));
+		this.menuItem(Resource.info(txt));
 	}
 
 	/**
@@ -175,7 +171,7 @@ class GopherMenu {
 	addEntry(item) {
 		/**
 		 * @typedef {Object} GopherMapEntry
-		 * @description An object from which a GopherResource can be constructed
+		 * @description An object from which a GopherResource (or Resource) can be constructed
 		 * @property {string} [type='3'] - The type of resource that this is
 		 * @property {string} [url] - A gopher url, all other parameters are ignored.
 		 * @property {string} [name='No Name] - Name of this entry
@@ -411,7 +407,7 @@ class GopherServer {
 			};
 
 			if (!hasMap) {
-				if(info.stat.isFile() || options.recurse) {
+				if (info.stat.isFile() || options.recurse) {
 					menu.addEntry(entry);
 				}
 			}
@@ -455,7 +451,7 @@ class GopherServer {
 				});
 
 				var handler = self.handlers.get(request.selector);
-				if(handler) {
+				if (handler) {
 					request.handler = handler;
 				}
 
@@ -495,4 +491,4 @@ class GopherServer {
  * @description This method is responsible for replying to incoming requests.
  */
 
-module.exports = GopherServer;
+export default GopherServer

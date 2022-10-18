@@ -1,6 +1,6 @@
-const assert = require('assert');
-const Gopher = require('./lib');
-console.log('Testing Gopher.Resource...');
+import assert from 'assert';
+import { Resource } from './lib.js';
+console.log('Testing Resource...');
 
 var proto = [ '','gopher://' ];
 var host = [ 'dusted.dk', 'floodgap.com' ];
@@ -36,8 +36,8 @@ proto.forEach( (p)=>{
 							
 							var res;
 							try {
-								assert.doesNotThrow( ()=>{ res = new Gopher.Resource(URI); }, 'Could not create from URI "'+URI+'"');
-								assert( res instanceof Gopher.Resource, "Expected to create a gopher resource.");
+								assert.doesNotThrow( ()=>{ res = new Resource(URI); }, 'Could not create from URI "'+URI+'"');
+								assert( res instanceof Resource, "Expected to create a gopher resource.");
 								assert.equal( res.host, h, 'wrong hostname');
 								if(P) {
 									assert.equal(res.port, P.substring(1), 'wrong set port');

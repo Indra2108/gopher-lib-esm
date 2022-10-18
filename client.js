@@ -1,11 +1,7 @@
-'use strict';
+import net from 'node:net';
+import fs from 'node:fs';
 
-const net = require('net');
-const fs = require('fs');
-
-const Common = require('./common.js');
-const GopherResource = Common.Resource;
-const GopherTypes = Common.Type;
+import { Resource, Type } from './common.js';
 
 const supportedTypes = '0145679hIgM';
 class GopherClient {
@@ -15,9 +11,9 @@ class GopherClient {
 	}
 
 	get(res, callback, fileName) {
-		if( !(res instanceof GopherResource)) {
+		if( !(res instanceof Resource)) {
 			try {
-				res = new GopherResource(res);
+				res = new Resource(res);
 			} catch(err) {
 				return callback(err);
 			}
@@ -95,7 +91,7 @@ class GopherClient {
 			var buffer=null;
 			var txt=null;
 
-			if(res.type===GopherTypes.directory || res.type===GopherTypes.search) {
+			if(res.type===Type.directory || res.type===Type.search) {
 				data=data.toString();
 				if(!this.parseDir) {
 					dir=data;
@@ -111,7 +107,7 @@ class GopherClient {
 						switch(l[0]) {
 							case 'i':
 							case '3':
-							dir.push( new GopherResource( '-', '1', '', l[0], l.substring(1).replace(/\t.+$/,'') ) );  
+							dir.push( new Resource( '-', '1', '', l[0], l.substring(1).replace(/\t.+$/,'') ) );  
 							break;
 							default:
 							if(l==='.') {
@@ -124,7 +120,7 @@ class GopherClient {
 							var port=split[3];
 							itemNum++;
 							try {
-								dir.push( new GopherResource( host, port, selector, l[0], name, false, itemNum ) );
+								dir.push( new Resource( host, port, selector, l[0], name, false, itemNum ) );
 							} catch(e) {
 								return callback(new Error('Error parsing directory item.'), { request: requestInfo, offendingLine: l, split:split, exception: e });
 							}
@@ -149,4 +145,4 @@ class GopherClient {
 	}
 }
 
-module.exports = GopherClient;
+export default GopherClient
