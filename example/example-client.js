@@ -3,7 +3,7 @@ import { Client, Resource } from '../lib.js'
 var get = process.argv[2];
 var fn = process.argv[3];
 
-if(!process.argv[2]) {
+if (!process.argv[2]) {
 	console.log('Usage: URI [fileName]');
 	console.log('           URI      - A Gopher uri, such as gopher://dusted.dk/');
 	console.log('           fileName - Save to file instead of showing.');
@@ -13,15 +13,15 @@ if(!process.argv[2]) {
 }
 
 var res = new Resource(get);
-var client = new Client({parseDir:true, timeout: 5000});
-console.log( res.toJson() );
-console.log( res.toURI() );
-console.log( res.toDirectoryEntity() );
+var client = new Client({ parseDir: true, timeout: 5000 });
+console.log(res.toJson());
+console.log(res.toURI());
+console.log(res.toDirectoryEntity());
 
-client.get( res, (err, reply)=>{
+client.get(res, (err, reply) => {
 
 	console.log(err, reply);
-	if(err) {
+	if (err) {
 		process.exit(1);
 	}
 }, fn);

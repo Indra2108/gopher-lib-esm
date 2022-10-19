@@ -5,21 +5,21 @@ import { Resource, Type } from './common.js';
 
 const supportedTypes = '0145679hIgM';
 class GopherClient {
-	constructor( options ) {
-		this.timeout = (options && options.timeout)?options.timeout:5000;
-		this.parseDir = (options && options.parseDir !== undefined)?options.parseDir:true;
+	constructor(options) {
+		this.timeout = (options && options.timeout) ? options.timeout : 5000;
+		this.parseDir = (options && options.parseDir !== undefined) ? options.parseDir : true;
 	}
 
 	get(res, callback, fileName) {
-		if( !(res instanceof Resource)) {
+		if (!(res instanceof Resource)) {
 			try {
 				res = new Resource(res);
-			} catch(err) {
+			} catch (err) {
 				return callback(err);
 			}
 		}
-		if( supportedTypes.indexOf(res.type) === -1 ) {
-			return callback(new Error('Unsupported type. Can get resources of type: '+supportedTypes));
+		if (supportedTypes.indexOf(res.type) === -1) {
+			return callback(new Error('Unsupported type. Can get resources of type: ' + supportedTypes));
 		}
 
 		var requestInfo = {
@@ -33,113 +33,113 @@ class GopherClient {
 			fileName: null
 		};
 
-		var fileWriteStream=null;
-		if( fileName ) {
+		var fileWriteStream = null;
+		if (fileName) {
 			fileWriteStream = fs.createWriteStream(fileName);
-			requestInfo.fileName=fileName;
+			requestInfo.fileName = fileName;
 		}
 		requestInfo.start = new Date();
-		var socket = net.createConnection( {port: res.port, host: res.host}, ()=>{
+		var socket = net.createConnection({ port: res.port, host: res.host }, () => {
 			//Add the selector
-			var request=res.selector;
+			var request = res.selector;
 			//Add a query?
-			if(res.query!==false) {
-				request +='\t'+res.query;
+			if (res.query !== false) {
+				request += '\t' + res.query;
 			}
 			//End line
-			request+='\r\n';
+			request += '\r\n';
 
 			socket.write(request);
-			requestInfo.remoteAddress=socket.remoteAddress;
+			requestInfo.remoteAddress = socket.remoteAddress;
 		});
-		var data=[];
-		if(fileWriteStream) {
+		var data = [];
+		if (fileWriteStream) {
 			socket.pipe(fileWriteStream);
 		}
 
-		socket.on('error', (err)=>{
-			if(fileName && fileWriteStream) {
+		socket.on('error', (err) => {
+			if (fileName && fileWriteStream) {
 				fileWriteStream.end();
 				fs.unlinkSync(fileName);
 			}
-			return callback(err, {request: requestInfo} );
+			return callback(err, { request: requestInfo });
 		});
-		if(!fileWriteStream) {
-			socket.on('data', (d)=>{
+		if (!fileWriteStream) {
+			socket.on('data', (d) => {
 				data.push(d);
 			});
 		}
-		socket.on('end', ()=>{
-			requestInfo.stop=new Date();
-			requestInfo.elapsed = requestInfo.stop-requestInfo.start;
+		socket.on('end', () => {
+			requestInfo.stop = new Date();
+			requestInfo.elapsed = requestInfo.stop - requestInfo.start;
 
-			requestInfo.bytesReceived=socket.bytesRead;
-			requestInfo.bytesSent=socket.bytesWritten;
+			requestInfo.bytesReceived = socket.bytesRead;
+			requestInfo.bytesSent = socket.bytesWritten;
 
 			socket.end();
 			socket.destroy();
 
-			if(fileWriteStream) {
-				fileWriteStream.end( ()=>{
+			if (fileWriteStream) {
+				fileWriteStream.end(() => {
 					return callback(null, { request: requestInfo });
 				});
 			}
 
 			data = Buffer.concat(data);
 
-			var dir=null;
-			var buffer=null;
-			var txt=null;
+			var dir = null;
+			var buffer = null;
+			var txt = null;
 
-			if(res.type===Type.directory || res.type===Type.search) {
-				data=data.toString();
-				if(!this.parseDir) {
-					dir=data;
+			if (res.type === Type.directory || res.type === Type.search) {
+				data = data.toString();
+				if (!this.parseDir) {
+					dir = data;
 				} else {
-					dir=[];
-					var itemNum=0;
-					var arr = data.replace(/\r\n/g,'\n').split('\n');
-					for( var idx=0; idx < arr.length; ++idx) {
-						var l=arr[idx];
-						if(l.length===0) {
+					dir = [];
+					var itemNum = 0;
+					var arr = data.replace(/\r\n/g, '\n').split('\n');
+					for (var idx = 0; idx < arr.length; ++idx) {
+						var l = arr[idx];
+						if (l.length === 0) {
 							break;
 						}
-						switch(l[0]) {
+						switch (l[0]) {
 							case 'i':
 							case '3':
-							dir.push( new Resource( '-', '1', '', l[0], l.substring(1).replace(/\t.+$/,'') ) );  
-							break;
-							default:
-							if(l==='.') {
+								dir.push(new Resource('-', '1', '', l[0], l.substring(1).replace(/\t.+$/, '')));
 								break;
-							}	
-							var split=l.substring(1).split('\t');
-							var name=split[0];
-							var selector=split[1];
-							var host=split[2];
-							var port=split[3];
-							itemNum++;
-							try {
-								dir.push( new Resource( host, port, selector, l[0], name, false, itemNum ) );
-							} catch(e) {
-								return callback(new Error('Error parsing directory item.'), { request: requestInfo, offendingLine: l, split:split, exception: e });
-							}
-							break;
+							default:
+								if (l === '.') {
+									break;
+								}
+								var split = l.substring(1).split('\t');
+								var name = split[0];
+								var selector = split[1];
+								var host = split[2];
+								var port = split[3];
+								itemNum++;
+								try {
+									dir.push(new Resource(host, port, selector, l[0], name, false, itemNum));
+								} catch (e) {
+									return callback(new Error('Error parsing directory item.'), { request: requestInfo, offendingLine: l, split: split, exception: e });
+								}
+								break;
 						}
 					}
 				}
-			} else if(!fileName && (res.type==='0' || res.type==='h' || res.type==='4' || res.type === '6' || res.type === 'M')) {
-				txt=data.toString();
-			} else if(!fileName && (res.type==='5' || res.type==='9' || res.type==='g' ||res.type==='I')) {
-				buffer=data;
+			} else if (!fileName && (res.type === '0' || res.type === 'h' || res.type === '4' || res.type === '6' || res.type === 'M')) {
+				txt = data.toString();
+			} else if (!fileName && (res.type === '5' || res.type === '9' || res.type === 'g' || res.type === 'I')) {
+				buffer = data;
 			}
-			return callback( null, { request: requestInfo, directory: dir, buffer: buffer, text: txt } );
+			return callback(null, { request: requestInfo, directory: dir, buffer: buffer, text: txt });
 		});
-		
-		if(this.timeout) {
-			socket.setTimeout( this.timeout, ()=>{
+
+		if (this.timeout) {
+			socket.setTimeout(this.timeout, () => {
 				socket.destroy();
-				callback( new Error('Connection to '+res.toString()+' timed out after '+this.timeout+' ms.') );
+				callback(new Error('Connection to ' + res.toString() + ' timed out after ' + this.timeout + ' ms.'));
 			});
 		}
 	}
